@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Compile script for FSociety kernel
+# Compile script for Beast kernel
 # Copyright (C) 2020-2021 Adithya R.
 
 set -euo pipefail
@@ -8,8 +8,9 @@ set -euo pipefail
 trap 'printf "\nInterrupted.\n"; exit 1' INT
 
 WD="$(pwd)"
-ZIPNAME="FSociety-surya-$(date '+%Y%m%d-%H%M').zip"
+ZIPNAME="BEAST:RELEASED-surya-$(date '+%Y%m%d-%H%M').zip"
 DEFCONFIG="surya_defconfig"
+export KBUILD_BUILD_USER="kim_chi_96"
 
 GCC64_DIR="$WD/tc/gcc-arm64"
 GCC32_DIR="$WD/tc/gcc-arm"
@@ -18,7 +19,7 @@ GCC_DOWNLOAD_URL="https://github.com/mvaisakh/gcc-build/releases/download"
 GCC_TAG="$(curl -fsSL "$GCC_RELEASES_API" 2>/dev/null | grep -m1 '"tag_name"' | cut -d'"' -f4 || true)"
 
 AK3_DIR="$WD/AnyKernel3"
-AK3_URL="https://github.com/rd-stuffs/AnyKernel3"
+AK3_URL="https://github.com/arshad-jamil33/AnyKernel3-surya"
 
 if git rev-parse --is-inside-work-tree &>/dev/null; then
 	SHA=$(git rev-parse --verify HEAD)
@@ -66,7 +67,7 @@ fi
 
 if [ ! -d "$AK3_DIR" ]; then
 	printf "Cloning AnyKernel3 to %s...\n" "$AK3_DIR"
-	git clone --depth=1 -b FSociety "$AK3_URL" "$AK3_DIR"
+	git clone --depth=1 -b master "$AK3_URL" "$AK3_DIR"
 fi
 
 KBUILD_COMPILER_STRING="$("$GCC64_DIR/bin/aarch64-elf-gcc" --version | head -n1)"
@@ -140,7 +141,7 @@ fi
 
 if [[ $KSU == "true" ]]; then
 	printf "Building KernelSU variant...\n"
-	ZIPNAME="${ZIPNAME/FSociety-surya/FSociety-KSU}"
+	ZIPNAME="${ZIPNAME/BEAST:RELEASED-surya/BEAST:RELEASED-KSU}"
 	scripts/config --file out/.config -e KSU
 	"${MAKE[@]}" olddefconfig &>/dev/null
 fi
